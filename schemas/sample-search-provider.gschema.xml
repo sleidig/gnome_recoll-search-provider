@@ -1,24 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="sample-search-provider@sebastian.leidig.gmail.com">
-    <enum id="sample-search-provider.dictionary">
-        <value value="0" nick="Català"/>
-        <value value="1" nick="English"/>
-        <value value="2" nick="Español"/>
-        <value value="3" nick="Italiano"/>
-    </enum>
-    <enum id="sample-search-provider.synonyms">
-        <value value="0" nick="English"/>
-        <value value="1" nick="Español"/>
-    </enum>
+<schemalist gettext-domain="recoll-search-provider@sebastian.leidig.gmail.com">
 
-    <schema path="/sample-search-provider/" id="sample-search-provider">
-        <key name="dictionary" enum="sample-search-provider.dictionary">
-            <default>'English'</default>
-            <summary>Dictionary</summary>
-        </key>
-        <key name="synonyms" enum="sample-search-provider.synonyms">
-            <default>'English'</default>
-            <summary>Synonyms</summary>
-        </key>
+    <schema path="/recoll-search-provider/" id="recoll-search-provider">
+
     </schema>
 </schemalist>

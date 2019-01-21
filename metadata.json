@@ -1,8 +1,8 @@
 {
-  "name": "Sample Search Provider",
-  "description": "A sample and base project to integrate custom search providers in GNOME Shell",
-  "uuid": "sample-search-provider@sebastian.leidig.gmail.com",
+  "name": "Recoll Search Provider",
+  "description": "A search provider integrating the recoll full-text search results into GNOME Shell.",
+  "uuid": "recoll-search-provider@sebastian.leidig.gmail.com",
   "shell-version": ["3.30.1"],
-  "gettext-domain": "sample-search-provider@sebastian.leidig.gmail.com",
-  "settings-schema": "sample-search-provider"
+  "gettext-domain": "recoll-search-provider@sebastian.leidig.gmail.com",
+  "settings-schema": "recoll-search-provider"
 }

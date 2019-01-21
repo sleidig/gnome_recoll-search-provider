@@ -1,23 +1,21 @@
 /*
- * Sample Search Provider
- * A sample and base project to integrate custom search providers in GNOME Shell.
- * This code provides a simple outline for a GNOME Extension that adds a new search into
- * the GNOME Shell search.
+ * Recoll Search Provider
+ * Search your Recoll notes from GNOME Shell.
  *
  * Copyright (C) 2019
  *     Sebastian Leidig <sebastian.leidig@gmail.com
  *
- * based on WordReference Search Provider by
- *     Lorenzo Carbonell <lorenzo.carbonell.cerezo@gmail.com>, https://www.atareao.es
+ * based on Sample Search Provider 
+ *     https://github.com/sleidig/gnome_sample-search-provider
  *
- * This file is part of Sample Search Provider
+ * This file is part of Recoll Search Provider
  *
- * Sample Search Provider is free software: you can redistribute it and/or modify
+ * Recoll Search Provider is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Sample Search Provider is distributed in the hope that it will be useful,
+ * Recoll Search Provider is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -47,10 +45,10 @@ const _ = Gettext.gettext;
 
 
 /** APP CONFIG **/
-const APP_NAME = 'Sample Search';
-const ICON_NAME = 'sample-search';
-const SEARCH_TERMS_FILTER = (terms => { return (terms[0].substring(0, 2) === 'd:' || terms[0].substring(0, 2) === 's:'); });
-const SEARCH_CLIENT = Extension.imports.search_client_sample; // see search_client_sample.js
+const APP_NAME = 'Recoll Search';
+const ICON_NAME = 'recoll';
+const SEARCH_TERMS_FILTER = (terms => { return true; });
+const SEARCH_CLIENT = Extension.imports.search_client_recoll;
 
 
 
