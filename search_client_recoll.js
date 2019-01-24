@@ -25,27 +25,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
   */
 
-const Soup = imports.gi.Soup;
+const GLib = imports.gi.GLib;
 const Extension = imports.misc.extensionUtils.getCurrentExtension();
-const Utils = Extension.imports.utils;
-
-
-
-const PROTOCOL = 'https';
-const BASE_URL = 'www.wordreference.com';
-const USER_AGENT = 'GNOME Shell - WordReferenceSearchProvider - extension';
-const HTTP_TIMEOUT = 10;
+const Base64 = Extension.imports.base64.Base64;
 
 
 
 class RecollSearchClient {
     constructor() {
-        this._protocol = PROTOCOL;
-        this._base_url = BASE_URL;
-        this._settings = Utils.getSettings();
-        this._settings.connect("changed", () => { /* update config for new settings if necessary */ });
+        
     }
-
 
 
     /**
@@ -60,62 +49,32 @@ class RecollSearchClient {
      *                         url
      */
     get(searchterm, callback) {
-        let query_url = this._buildQueryUrl(searchterm);
-        let request = Soup.Message.new('GET', query_url);
-        _get_soup_session().queue_message(request, (http_session, message) => {
-            if(message.status_code !== Soup.KnownStatusCode.OK) {
-                let error_message =
-                    "RecollSearchClient:get(): Error code: %s".format(
-                        message.status_code
-                    );
-                callback(error_message, null);
-            } else {
-                const results = this._parseResults(message.response_body.data);
+        let resultData = GLib.spawn_command_line_sync('recoll -t -n 10 -F "filename title abstract url" -q "' + searchterm + '"')[1].toString();
+	resultData = resultData.replace(/\n$/g, ''); // remove newlines at end of result
+	let rawResults = resultData.split('\n').slice(2);
 
-                if(results.length > 0){
-                    callback(null, results);
-                    return;
-                } else {
-                    let error = "Nothing found";
-                    callback(error, null);
-                }
-            }
-        });
+        const results = this._parseResults(rawResults);
+        callback(null, results);
     }
 
-    _buildQueryUrl(searchterm) {
-        let dictionary = "definition";
-        let word = searchterm.substring(2).trim();
-        let url = '%s://%s/%s/%s'.format(
-            this._protocol,
-            this._base_url,
-            dictionary,
-            encodeURIComponent(word)
-        );
-        return url;
-    }
-
-    _parseResults(data) {
+    _parseResults(rawResultsArray) {
         let parsedResults = [];
 
-        let sampleItem1 = {
-            id: 'index_'+1,
-            label: 'Sample 1',
-            name: 'Sample 1',
-            url: 'http://www.google.com',
-            description: 'these details are just examples'
-        };
-        parsedResults.push(sampleItem1);
+        rawResultsArray.forEach((item, index) => {
+            const resultAttributes = item.toString().split(' ');
+            const rName = Base64.decode(resultAttributes[0]);
+            const rDescr = Base64.decode(resultAttributes[1]);
+            const rAbstract = Base64.decode(resultAttributes[2]);
+            const rUrl = Base64.decode(resultAttributes[3]);
 
-        let sampleItem2 = {
-            id: 'index_'+2,
-            label: 'Another One',
-            name: 'Another One',
-            url: 'http://www.google.com',
-            description: 'who knows ...'
-        };
-        parsedResults.push(sampleItem2)
-
+            let resultObject = {
+                id: 'recoll_'+index,
+                name: rName,
+                description: rDescr + ' ' + rAbstract,
+                url: rUrl
+            };
+            parsedResults.push(resultObject);
+        });
 
         return parsedResults;
     }
@@ -123,28 +82,8 @@ class RecollSearchClient {
 
 
     destroy() {
-        _get_soup_session().run_dispose();
-        _SESSION = null;
+        
     }
-}
-
-
-
-//TODO: should/could _SESSION be inside the SearchClient class?
-let _SESSION = null;
-
-function _get_soup_session() {
-    if(_SESSION === null) {
-        _SESSION = new Soup.SessionAsync();
-        Soup.Session.prototype.add_feature.call(
-            _SESSION,
-            new Soup.ProxyResolverDefault()
-        );
-        _SESSION.user_agent = USER_AGENT;
-        _SESSION.timeout = HTTP_TIMEOUT;
-    }
-
-    return _SESSION;
 }
 
 

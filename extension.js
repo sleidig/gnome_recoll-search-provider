@@ -199,7 +199,7 @@ class GenericSearchProvider {
                     metas.push({
                         id: meta.id,
                         name: meta.name,
-                        //description: meta.description,
+                        description: meta.description,
                         createIcon: this._createIconGenerator()
                     });
                 }
