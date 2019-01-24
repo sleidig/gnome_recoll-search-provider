@@ -223,7 +223,7 @@ class GenericSearchProvider {
         if (!(identifier in this._messages)) {
             result = this.resultsMap.get(identifier);
             if (result) {
-                Util.trySpawnCommandLine("xdg-open " + result.url);
+                Util.trySpawnCommandLine('xdg-open "' + result.url + '"');
             }
         }
     }
