@@ -47,15 +47,25 @@ const _ = Gettext.gettext;
 /** APP CONFIG **/
 const APP_NAME = 'Recoll Search';
 const ICON_NAME = 'recoll';
+const APP_COMMAND_FACTORY = (terms => { return 'recoll -q "' + terms + '"'; });
 const SEARCH_TERMS_FILTER = (terms => { return true; });
 const SEARCH_CLIENT = Extension.imports.search_client_recoll;
 
 
 
 class GenericSearchProvider {
-    constructor(appName, iconName, isRelevantSearchTermsFunction, clientApi) {
+    /**
+     * Create a new GenericSearchProvider configured with the passed arguments:
+     * @param {string} appName The human-readable name displayed for the extension.
+     * @param {string} iconName The filename of the icon within the extensions "icons" subfolder
+     * @param {Function} appCommandFactory A function receiving the search terms generating a command to launch the search in the app.
+     * @param {Function} isRelevantSearchTermsFunction A function receiving the search terms as a parameter and evaluating to true if the SearchProvider should be displayed for this query.
+     * @param {SearchClient} clientApi An instance of a SearchClient managing the retrieval of actual results.
+     */
+    constructor(appName, iconName, appCommandFactory, isRelevantSearchTermsFunction, clientApi) {
         this._appName = appName;
         this._iconName = iconName;
+        this._generateAppCommand = appCommandFactory;
         this._isRelevantSearchTerms = isRelevantSearchTermsFunction;
         this._api = clientApi;
 
@@ -231,15 +241,13 @@ class GenericSearchProvider {
 
 
     /**
-     * Launch the search in the default app (i.e. browser)
+     * Launch the search in the actual application.
+     * This function is called by GNOME Shell when the user clicks on the Extension icon & name displayed to the left of its results.
      * @param {String[]} terms
      */
-    /*
     launchSearch(terms) {
-        Util.trySpawnCommandLine(
-            "xdg-open " + this._api.getFullSearchUrl(this._getQuery(terms)));
+        Util.trySpawnCommandLine(this._generateAppCommand(terms));
     }
-    */
 
 
 
@@ -285,7 +293,7 @@ function init() {
 function enable() {
     if (!searchProvider) {
         let client = SEARCH_CLIENT.getSearchClient();
-        searchProvider = new GenericSearchProvider(APP_NAME, ICON_NAME, SEARCH_TERMS_FILTER, client);
+        searchProvider = new GenericSearchProvider(APP_NAME, ICON_NAME, APP_COMMAND_FACTORY, SEARCH_TERMS_FILTER, client);
         Main.overview.viewSelector._searchResults._registerProvider(
             searchProvider
         );
